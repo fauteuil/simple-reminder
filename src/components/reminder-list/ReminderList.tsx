@@ -1,17 +1,39 @@
-import { useRecoilValue } from "recoil";
-import { reminderListState } from "./state";
+import { useReminder } from "../../hooks/useReminder";
 import { Reminder, Reminders } from "./types";
+import { ReminderItem } from "./ReminderItem";
+import {
+  ReminderListContainer,
+  ReminderItemContainer
+} from "./ReminderList.styles";
+import { useCallback } from "react";
+import { useRouter } from "../../hooks/useRouter";
 
 export function ReminderList() {
-  const reminderList = useRecoilValue(reminderListState);
+  const {
+    reminderList,
+    selectedReminder,
+    selectedReminderId,
+    setSelectedReminderId
+  } = useReminder();
+
+  const { navigate } = useRouter();
+
+  const handleReminderClick = useCallback(
+    (id) => () => {
+      navigate(`/reminders/${id}`);
+    },
+    [setSelectedReminderId]
+  );
 
   function renderItem({ description, id, title }: Reminder) {
     return (
-      <div key={id}>
-        <div>{id}</div>
-        <div>{title}</div>
-        <div>{description}</div>
-      </div>
+      <ReminderItem
+        description={description}
+        id={id}
+        key={id}
+        onClick={handleReminderClick(id)}
+        title={title}
+      />
     );
   }
 
@@ -19,5 +41,7 @@ export function ReminderList() {
     return items.map((item) => renderItem(item));
   }
 
-  return <>{renderList(reminderList)}</>;
+  return (
+    <ReminderListContainer>{renderList(reminderList)}</ReminderListContainer>
+  );
 }

@@ -9,16 +9,7 @@ import { ReminderList } from "./components/reminder-list";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import { RouterViews } from "./RouterViews";
-
-const LayoutWrapper = styled.div`
-  padding: 2rem;
-  width: 84%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-around;
-`;
+import { LayoutWrapper } from "./components/layout";
 
 export function App() {
   return (
@@ -28,10 +19,6 @@ export function App() {
           <>
             <h1>Recoil Simple Reminders</h1>
             <h2>Click the Orange timer to reset!</h2>
-            <ReminderList />
-            <LayoutWrapper>
-              <OrangeTimer />
-            </LayoutWrapper>
             <LayoutWrapper>
               <RouterViews />
             </LayoutWrapper>

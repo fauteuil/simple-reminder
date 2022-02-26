@@ -1,7 +1,7 @@
 /**
  * Dynamic URL params passed to the router
  */
-export interface MatchParams {
+export type MatchParams = {
   sectionId?: string;
   itemId?: string;
-}
+};

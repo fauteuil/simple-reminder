@@ -1,16 +1,16 @@
 import {
-  // useHistory,
-  // useHistory,
+  useHistory,
   useLocation,
-  useParams
-  // useRouteMatch,
-} from "react-router-dom";
-import { MatchParams } from "../types";
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom';
+import { MatchParams } from '../types';
 
 export const useRouter = () => {
+  const history = useHistory();
   const location = useLocation();
-  // const history = useHistory();
-  // const match = useRouteMatch();
+  const match = useRouteMatch();
+
   // Get the values of dynamic parameters from the current URL.
   const routerParams = useParams<MatchParams>();
   // Get the values of query parameters from the current URL.

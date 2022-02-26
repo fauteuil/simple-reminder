@@ -1,52 +1,125 @@
-import React, { useEffect, useRef } from "react";
-import { useRecoilState, useResetRecoilState } from "recoil";
-import styled from "styled-components";
+import React, { useEffect, useRef, useState } from 'react';
+import { useRecoilState, useResetRecoilState } from 'recoil';
+import styled from 'styled-components';
+import { DateTimeUnits } from '../../config/defaults';
+import { useReminder } from '../../hooks/useReminder';
 
-import { orangeTimerState } from "./state";
-
-const OrangeCircle = styled.div`
-  border: 1rem solid orange;
-  border-radius: 5rem;
-  padding-top: 2rem;
-  height: 3rem;
-  width: 5rem;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover {
-    border-color: orangered;
-    background-color: lightyellow;
-  }
-  &:active {
-    border-color: red;
-    background-color: lightsalmon;
-  }
-`;
+import { orangeTimerState } from './state';
+import { OrangeCircle } from './Timer.styles';
+import { TimerProps } from './types';
+const { Hour, Minute, Second } = DateTimeUnits;
 
 export function OrangeTimer(props: TimerProps) {
+  // console.log('mounting');
+  const { fullTime = 10, handleTimerEnd } = props;
   const [timeLeft, setTimeLeft] = useRecoilState(orangeTimerState);
+  const [currentTime, setCurrentTime] = useState(fullTime);
+  // const [timerRunning, setTimerRunning] = useState<boolean>(true);
   const timerRef = useRef<number>();
+  const { selectedReminderId } = useReminder();
+
+  const clearTimer = () => {
+    // setTimerRunning(false);
+    clearInterval(timerRef.current);
+    timerRef.current = 0;
+    console.log('cleared: timerRef.current', timerRef?.current);
+  };
+
+  function startTimer() {
+    // setCurrentTime(Math.max(0, currentTime - Second));
+    // setTimerRunning(true);
+    setCurrentTime(Math.max(0, currentTime - 1));
+    // setTimerOn(true);
+    // console.log("timer.current", timer.current);
+  }
+
+  function resetTimer() {
+    // setTimerRunning(true);
+    // setCurrentTime(Math.max(0, currentTime - Second));
+    setCurrentTime(fullTime);
+    // setTimerOn(true);
+    // console.log("timer.current", timer.current);
+  }
+
+  const handleComplete = (handler?: any): any => {
+    if (handler && typeof handler === 'function') {
+      handler();
+    }
+    console.log("Time's Up!");
+    // setTimerRunning(false);
+  };
+
+  // useEffect(() => {
+  //   timerRef.current = window.setInterval(() => {
+  //     // setTimeLeft((prevTimeLeft) => {
+  //     setCurrentTime((prevTimeLeft) => {
+  //       if (prevTimeLeft > 0) {
+  //         return prevTimeLeft - 1;
+  //       }
+  //       else {
+  //         if (handleTimerEnd) {
+  //           console.log('timer.ended');
+  //           handleTimerEnd();
+  //         }
+  //         clearInterval(timerRef.current);
+  //         return prevTimeLeft;
+  //       }
+  //     });
+  //   }, 1000);
+  //   return () => clearTimer();
+  //   // }, [setTimeLeft]);
+  // }, [setCurrentTime]);
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => {
-        if (prevTimeLeft > 0) {
-          return prevTimeLeft - 1;
-        }
-        return prevTimeLeft;
-      });
-    }, 1000);
+    const currentReminderId = selectedReminderId;
+    resetTimer();
+  }, [selectedReminderId]);
+
+  useEffect(() => {
+    // if (timerRunning) {
+    const timerIntervalID = window.setInterval(() => {
+      // setCurrentTime(Math.max(0, currentTime - Second));
+      const newTime = Math.max(0, currentTime - 1);
+      if (currentTime <= 0) {
+        clearTimer();
+        setCurrentTime(fullTime);
+        handleComplete(handleTimerEnd);
+        return;
+      } else {
+        setCurrentTime(newTime);
+      }
+    }, Second);
+    // Update the timer ID value each interval
+    timerRef.current = timerIntervalID;
     return () => {
-      clearInterval(timerRef.current);
+      // setTimerRunning(false);
+      clearTimer();
     };
-  }, [setTimeLeft]);
+    // }
+  }, [currentTime, handleTimerEnd]);
+
+  const timerRunning = currentTime < fullTime;
+  console.log(`currentTime`, currentTime);
+  console.log(`fullTime`, fullTime);
 
   return (
-    <OrangeCircle
-      title="Click to reset the time!"
-      onClick={useResetRecoilState(orangeTimerState)}
-    >
-      {timeLeft || "(restart)"}
-    </OrangeCircle>
+    <>
+      <OrangeCircle
+        title='Click to reset the timer!'
+        // onClick={useResetRecoilState(orangeTimerState)}
+        onClick={() => resetTimer()}
+      >
+        {/* {timeLeft || "(restart)"} */}
+        {currentTime || "time's up"}
+      </OrangeCircle>
+      <div
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          timerRunning ? clearTimer() : startTimer();
+        }}
+      >
+        {timerRunning ? 'pause' : 'start'}
+      </div>
+    </>
   );
 }

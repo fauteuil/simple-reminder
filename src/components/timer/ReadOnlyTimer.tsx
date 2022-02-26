@@ -17,12 +17,12 @@ const GreenCircle = styled.div<BgBorderColor>`
 `;
 
 export function ReadOnlyTimer({
-  bgColor = "red",
+  bgColor = "white",
   borderColor = "green"
 }: BgBorderColor) {
   const timeLeft = useRecoilValue(orangeTimerState);
   return (
-    <GreenCircle bgColor={props.bgColor} borderColor={props.borderColor}>
+    <GreenCircle bgColor={bgColor} borderColor={borderColor}>
       {timeLeft}
     </GreenCircle>
   );

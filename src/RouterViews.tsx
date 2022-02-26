@@ -1,4 +1,5 @@
 import { Route, Switch } from "react-router-dom";
+import { Dashboard } from "./views/dashboard/Dashboard";
 
 export function RouterViews() {
   return (
@@ -11,8 +12,11 @@ export function RouterViews() {
         <Route path="/about">
           <div>aboout</div>
         </Route>
-        <Route path="/:user">
-          <div>user</div>
+        <Route exact path="/reminders/:itemId">
+          <Dashboard />
+        </Route>
+        <Route path="/reminders">
+          <div>reminder list</div>
         </Route>
         <Route>
           <div>nope</div>
